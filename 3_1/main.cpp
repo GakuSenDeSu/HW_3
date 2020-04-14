@@ -28,7 +28,7 @@ I2C i2c( PTD9,PTD8);
 Serial pc(USBTX, USBRX);
 DigitalOut led(LED1);
 InterruptIn sw2(SW2);
-EventQueue queue(1024 * EVENTS_EVENT_SIZE);
+EventQueue queue(512 * EVENTS_EVENT_SIZE);
 int m_addr = FXOS8700CQ_SLAVE_ADDR1;
 uint8_t who_am_i, data[2], res[6];
 int16_t acc16;
