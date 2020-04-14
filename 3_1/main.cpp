@@ -60,7 +60,7 @@ void led1_info() {
     wait_us(100000);
     
     //Calculate degree
-    double R = sqrt((t[0])^2 + (t[1])^2 + (t[2])^2);
+    float R = (float)sqrt((double)(((t[0])^2) + ((t[1])^2) + ((t[2])^2)));
     d[0] = acos(t[0]/R);
     d[1] = acos(t[1]/R);
     d[2] = acos(t[2]/R);
