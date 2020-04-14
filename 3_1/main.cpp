@@ -28,7 +28,7 @@ I2C i2c( PTD9,PTD8);
 Serial pc(USBTX, USBRX);
 DigitalOut led(LED1);
 InterruptIn sw2(SW2);
-EventQueue queue(32 * EVENTS_EVENT_SIZE);
+EventQueue queue(1024 * EVENTS_EVENT_SIZE);
 int m_addr = FXOS8700CQ_SLAVE_ADDR1;
 uint8_t who_am_i, data[2], res[6];
 int16_t acc16;
@@ -57,15 +57,15 @@ void led_info() {
     if (acc16 > UINT14_MAX/2)
         acc16 -= UINT14_MAX;
      t[2] = ((float)acc16) / 4096.0f;
-    wait_us(100000);
+    wait_us(1000);
     
     //Calculate degree
     float R = (float)sqrt(((t[0])*(t[0])) + ((t[1])*(t[1])) + ((t[2])+(t[2])));
     d[0] = acos(t[0]/R);
     d[1] = acos(t[1]/R);
     d[2] = acos(t[2]/R);
-    if ((d[0]>=0.7853981634) | (d[1]>=0.7853981634) | (d[2]>=0.7853981634)){
-        printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
+    if (((d[0])>=45) | ((d[1])>=45) | ((d[2])>=45)){
+    printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
     }
     else{
         printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],0);
@@ -74,40 +74,41 @@ void led_info() {
 
 void Trig_led()  {
     timer_log.start();
-    while (true){
+    while(true){
+        if(timer_log.read_us() <= 10000000){
+        queue.call_in(10,led_info);
         led = !led;
-        wait_us(10000);
-        if(timer_log.read() <= 10){
-            queue.call(led_info);
+        wait_us(1000000);
         }
         else{
-            timer_log.reset();
-            break;
+        timer_log.reset();
+        led = 1;
+        break;
         }
     }
-    led = 1;
+}
+
+void None(){
+
 }
 
 int main() {
    pc.baud(115200);
    // Enable the FXOS8700Q
-
    FXOS8700CQ_readRegs( FXOS8700Q_CTRL_REG1, &data[1], 1);
    data[1] |= 0x01;
    data[0] = FXOS8700Q_CTRL_REG1;
    FXOS8700CQ_writeRegs(data, 2);
-
+   led=1;
    // Get the slave address
    FXOS8700CQ_readRegs(FXOS8700Q_WHOAMI, &who_am_i, 1);
-
-   pc.printf("Here is %x\r\n", who_am_i);
    
    // t is a thread to process tasks in an EventQueue
    // t call queue.dispatch_forever() to start the scheduler of the EventQueue
    thread.start(callback(&queue, &EventQueue::dispatch_forever));
    // 'Trig_led' will execute in IRQ context
    sw2.rise(Trig_led);
-
+   sw2.fall(None);
 }
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len) {
