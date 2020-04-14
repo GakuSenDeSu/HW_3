@@ -34,7 +34,6 @@ uint8_t who_am_i, data[2], res[6];
 int16_t acc16;
 float t[3];
 float d[3];
-float R;
 
 Thread thread;
 Timer timer_log;
@@ -58,14 +57,14 @@ void led1_info() {
     if (acc16 > UINT14_MAX/2)
         acc16 -= UINT14_MAX;
      t[2] = ((float)acc16) / 4096.0f;
-    wait(0.1);
+    wait_us(100000);
     
     //Calculate degree
-    R = squrt(t[0]^2 + t[1]^2 + t[2]^2);
+    double R = sqrt((t[0])^2 + (t[1])^2 + (t[2])^2);
     d[0] = acos(t[0]/R);
     d[1] = acos(t[1]/R);
     d[2] = acos(t[2]/R);
-    if (d[0]>=45 | d[1]>=45 | d[2]>=45){
+    if ((d[0]>=45) | (d[1]>=45) | (d[2]>=45)){
         printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
     }
     else{
@@ -77,9 +76,9 @@ void Trig_led1()  {
     timer_log.start();
     while (true){
         led1 = !led1;
-        wait(0.1);
+        wait_us(100000);
         led1 = !led1;
-        wait(0.1);
+        wait_us(100000);
         if(timer_log.read() <= 10){
             queue.call(led1_info);
         }
