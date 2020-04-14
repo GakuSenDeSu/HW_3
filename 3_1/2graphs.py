@@ -28,11 +28,8 @@ for x in range(0, int(Fs)):
     y3k[x] = float(y3)
     y4=line.decode().strip().split(" ")[3]
     y4k[x] = float(y4)
-    print(y4k[x])
 
 fig, ax = plt.subplots(2, 1)
-plt.plot(t,y4k)
-'''
 ax[0].plot(x,y1k,'r',label = 'x')
 ax[0].plot(x,y2k,'b',label = 'y')
 ax[0].plot(x,y3k,'g',label = 'z')
@@ -42,6 +39,5 @@ ax[0].set_ylabel('Acc Vector')
 ax[1].plot(x,y4k,'bo') # plotting the spectrum
 ax[1].set_xlabel('Time')
 ax[1].set_ylabel('Tilt')
-'''
 plt.show()
 s.close()
