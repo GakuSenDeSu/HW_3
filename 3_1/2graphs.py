@@ -15,10 +15,15 @@ s = serial.Serial(serdev,115200)
 for x in range(0, int(Fs)):
     line=s.readline() # Read an echo string from K66F terminated with '\n'
     print(line)
-    y1[x] = float(line[0])
-    y2[x] = float(line[1])
-    y3[x] = float(line[2])
-    y4[x] = float(line[3])
+    y1,y2,y3,y4=line.split(" ",3)
+    print(y1)
+    print(y2)
+    print(y3)
+    print(y4)
+    y1[x] = float(y1)
+    y2[x] = float(y2)
+    y3[x] = float(y3)
+    y4[x] = float(y4)
 
 
 fig, ax = plt.subplots(2, 1)
