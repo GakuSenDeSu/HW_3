@@ -29,13 +29,13 @@ for x in range(0, int(Fs)):
     y4k[x] = float(y4)
 
 fig, ax = plt.subplots(2, 1)
-ax[0].plot(x,y1k,'r',label = 'x')
-ax[0].plot(x,y2k,'b',label = 'y')
-ax[0].plot(x,y3k,'g',label = 'z')
+ax[0].plot(t,y1k,'r',label = 'x')
+ax[0].plot(t,y2k,'b',label = 'y')
+ax[0].plot(t,y3k,'g',label = 'z')
 ax[0].plot.legend(loc='lower left')
 ax[0].set_xlabel('Time')
 ax[0].set_ylabel('Acc Vector')
-ax[1].plot(x,y4k,'bo') # plotting the spectrum
+ax[1].plot(t,y4k,'bo') # plotting the spectrum
 ax[1].set_xlabel('Time')
 ax[1].set_ylabel('Tilt')
 plt.show()
