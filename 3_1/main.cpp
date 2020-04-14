@@ -36,7 +36,6 @@ float t[3];
 float d[3];
 
 Thread thread;
-Thread thread2;
 Timer timer_log;
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len);
@@ -65,7 +64,7 @@ void led_info() {
     d[0] = acos(t[0]/R);
     d[1] = acos(t[1]/R);
     d[2] = acos(t[2]/R);
-    if ((d[0]>=45) | (d[1]>=45) | (d[2]>=45)){
+    if ((d[0]>=0.7853981634) | (d[1]>=0.7853981634) | (d[2]>=0.7853981634)){
         printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
     }
     else{
@@ -73,18 +72,11 @@ void led_info() {
     }
 }
 
-void led_thread2() {
-    while (true) {
-        led = !led;
-        wait_us(1000000);
-    }
-}
-
-
 void Trig_led()  {
     timer_log.start();
-    thread2.start(led_thread2); 
     while (true){
+        led = !led;
+        wait_us(10000);
         if(timer_log.read() <= 10){
             queue.call(led_info);
         }
@@ -93,6 +85,7 @@ void Trig_led()  {
             break;
         }
     }
+    led = 1;
 }
 
 int main() {
