@@ -26,7 +26,7 @@
 
 I2C i2c( PTD9,PTD8);
 Serial pc(USBTX, USBRX);
-DigitalOut led1(LED1);
+DigitalOut led(LED1);
 InterruptIn sw2(SW2);
 EventQueue queue(32 * EVENTS_EVENT_SIZE);
 int m_addr = FXOS8700CQ_SLAVE_ADDR1;
@@ -42,7 +42,7 @@ Timer timer_log;
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len);
 void FXOS8700CQ_writeRegs(uint8_t * data, int len);
 
-void led1_info() {
+void led_info() {
     FXOS8700CQ_readRegs(FXOS8700Q_OUT_X_MSB, res, 6);
     acc16 = (res[0] << 6) | (res[1] >> 2);
     if (acc16 > UINT14_MAX/2)
@@ -73,20 +73,20 @@ void led1_info() {
     }
 }
 
-void led2_thread() {
+void led_thread2() {
     while (true) {
-        led2 = !led2;
+        led = !led;
         wait_us(1000000);
     }
 }
 
 
-void Trig_led1()  {
+void Trig_led()  {
     timer_log.start();
-    thread2.start(led2_thread); 
+    thread2.start(led_thread2); 
     while (true){
         if(timer_log.read() <= 10){
-            queue.call(led1_info);
+            queue.call(led_info);
         }
         else{
             timer_log.reset();
@@ -112,8 +112,8 @@ int main() {
    // t is a thread to process tasks in an EventQueue
    // t call queue.dispatch_forever() to start the scheduler of the EventQueue
    thread.start(callback(&queue, &EventQueue::dispatch_forever));
-   // 'Trig_led1' will execute in IRQ context
-   sw2.rise(Trig_led1);
+   // 'Trig_led' will execute in IRQ context
+   sw2.rise(Trig_led);
 
 }
 
