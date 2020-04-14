@@ -5,7 +5,10 @@ import time
 Fs = 128.0;  # sampling rate
 Ts = 1.0/Fs; # sampling interval
 t = np.arange(0,10,Fs) # time vector; create Fs samples between 0 and 1.0 sec.
-y = np.arange(-1.5,1.5,Ts) # signal vector; create Fs samples
+y1 = np.arange(-1.5,1.5,Ts) # signal vector; create Fs samples
+y2 = np.arange(-1.5,1.5,Ts)
+y3 = np.arange(-1.5,1.5,Ts)
+y4 = np.arange(-0.5,1.5,Ts)
 
 serdev = '/dev/ttyACM0'
 s = serial.Serial(serdev,115200)
