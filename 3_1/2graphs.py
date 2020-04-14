@@ -19,7 +19,10 @@ for x in range(0, int(Fs)):
 
 
 fig, ax = plt.subplots(2, 1)
-ax[0].plot(t,y1,'r',label = 'x',t,y2,'b',label = 'y',t,y3,'g',label = 'z')
+ax[0].plot(y1,'r',label = 'x')
+ax[0].plot(y2,'b',label = 'y'
+ax[0].plot(y3,'g',label = 'z')
+ax[0].plt.legend(loc='lower left')
 ax[0].set_xlabel('Time')
 ax[0].set_ylabel('Acc Vector')
 ax[1].plot(t,y4,'bo') # plotting the spectrum
