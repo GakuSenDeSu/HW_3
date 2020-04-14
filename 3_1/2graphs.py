@@ -18,7 +18,7 @@ serdev = '/dev/ttyACM0'
 s = serial.Serial(serdev,115200)
 for x in range(0, int(Fs)):
     line=s.readline() # Read an echo string from K66F terminated with '\n'
-    print(line)
+    #print(line)
     y1=line.decode().strip().split(" ")[0]
     y1k[x] = float(y1)
     y2=line.decode().strip().split(" ")[1]
@@ -30,13 +30,13 @@ for x in range(0, int(Fs)):
 
 
 fig, ax = plt.subplots(2, 1)
-ax[0].plot(t,y1k,'r',label = 'x')
-ax[0].plot(t,y2k,'b',label = 'y')
-ax[0].plot(t,y3k,'g',label = 'z')
-ax[0].plt.legend(loc='lower left')
+ax[0].plot(x,y1k,'r',label = 'x')
+ax[0].plot(x,y2k,'b',label = 'y')
+ax[0].plot(x,y3k,'g',label = 'z')
+#ax[0].plt.legend(loc='lower left')
 ax[0].set_xlabel('Time')
 ax[0].set_ylabel('Acc Vector')
-ax[1].plot(t,y4k,'bo') # plotting the spectrum
+ax[1].plot(x,y4k,'bo') # plotting the spectrum
 ax[1].set_xlabel('Time')
 ax[1].set_ylabel('Tilt')
 plt.show()
