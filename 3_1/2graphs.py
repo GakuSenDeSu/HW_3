@@ -19,7 +19,6 @@ serdev = '/dev/ttyACM0'
 s = serial.Serial(serdev,115200)
 for x in range(0, int(Fs)):
     line=s.readline() # Read an echo string from K66F terminated with '\n'
-    print(line)
     y1=line.decode().strip().split(" ")[0]
     y1k[x] = float(y1)
     y2=line.decode().strip().split(" ")[1]
