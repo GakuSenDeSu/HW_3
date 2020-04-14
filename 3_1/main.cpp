@@ -36,6 +36,7 @@ float t[3];
 float d[3];
 
 Thread thread;
+Thread thread2;
 Timer timer_log;
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len);
@@ -60,7 +61,7 @@ void led1_info() {
     wait_us(100000);
     
     //Calculate degree
-    float R = (float)sqrt((double)(((t[0])^2) + ((t[1])^2) + ((t[2])^2)));
+    float R = (float)sqrt(((t[0])*(t[0])) + ((t[1])*(t[1])) + ((t[2])+(t[2])));
     d[0] = acos(t[0]/R);
     d[1] = acos(t[1]/R);
     d[2] = acos(t[2]/R);
@@ -72,13 +73,18 @@ void led1_info() {
     }
 }
 
+void led2_thread() {
+    while (true) {
+        led2 = !led2;
+        wait_us(1000000);
+    }
+}
+
+
 void Trig_led1()  {
     timer_log.start();
+    thread2.start(led2_thread); 
     while (true){
-        led1 = !led1;
-        wait_us(100000);
-        led1 = !led1;
-        wait_us(100000);
         if(timer_log.read() <= 10){
             queue.call(led1_info);
         }
