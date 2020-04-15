@@ -75,7 +75,8 @@ void Trig_led()  {
     while(true){
         led = !led;
         if(timer_log.read_us() <= 10000000){
-        queue.call_in(10,led_info);
+        queue.call(led_info);
+        wait(2);
         }
         else{
         timer_log.reset();
