@@ -69,17 +69,15 @@ void rotate_info() {
         else{
             printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],0);
         }
+        led =! led;
+        wait(1);
     }
     timer_log.reset();
 }
 
 void Trig_led()  {
     timer_log.start();
-    queue.call(rotate_info);
-}
-
-void None(){
-
+    queue.call_every(100,rotate_info);
 }
 
 
@@ -97,10 +95,8 @@ int main() {
    // thread is a thread to process tasks in an EventQueue
    // thread call queue.dispatch_forever() to start the scheduler of the EventQueue
    thread.start(callback(&queue, &EventQueue::dispatch_forever));
-   thread2.start(callback(&queue2, &EventQueue::dispatch_forever));
    // 'Trig_led' will execute in IRQ context
    sw2.rise(Trig_led);
-   sw2.fall(None);
 }
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len) {
