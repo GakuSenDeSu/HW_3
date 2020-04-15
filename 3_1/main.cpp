@@ -28,7 +28,7 @@ I2C i2c( PTD9,PTD8);
 Serial pc(USBTX, USBRX);
 DigitalOut led(LED1);
 InterruptIn sw2(SW2);
-EventQueue queue(512 * EVENTS_EVENT_SIZE);
+EventQueue queue(2056 * EVENTS_EVENT_SIZE);
 int m_addr = FXOS8700CQ_SLAVE_ADDR1;
 uint8_t who_am_i, data[2], res[6];
 int16_t acc16;
@@ -57,8 +57,6 @@ void led_info() {
     if (acc16 > UINT14_MAX/2)
         acc16 -= UINT14_MAX;
      t[2] = ((float)acc16) / 4096.0f;
-    wait_us(1000);
-    
     //Calculate degree
     float R = (float)sqrt(((t[0])*(t[0])) + ((t[1])*(t[1])) + ((t[2])+(t[2])));
     d[0] = acos(t[0]/R);
@@ -78,7 +76,6 @@ void Trig_led()  {
         if(timer_log.read_us() <= 10000000){
         queue.call_in(10,led_info);
         led = !led;
-        wait_us(1000000);
         }
         else{
         timer_log.reset();

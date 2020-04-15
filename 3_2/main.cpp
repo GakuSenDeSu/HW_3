@@ -27,46 +27,59 @@
 I2C i2c( PTD9,PTD8);
 Serial pc(USBTX, USBRX);
 DigitalOut led(LED1);
-DigitalIn sw2(SW2);
-EventQueue queue(512 * EVENTS_EVENT_SIZE);
+InterruptIn sw2(SW2);
+EventQueue queue(32 * EVENTS_EVENT_SIZE);
 int m_addr = FXOS8700CQ_SLAVE_ADDR1;
 uint8_t who_am_i, data[2], res[6];
 int16_t acc16;
 float t[3];
 float d[3];
 
+Thread thread;
 Timer timer_log;
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len);
 void FXOS8700CQ_writeRegs(uint8_t * data, int len);
 
-void led_info() {
-    FXOS8700CQ_readRegs(FXOS8700Q_OUT_X_MSB, res, 6);
-    acc16 = (res[0] << 6) | (res[1] >> 2);
-    if (acc16 > UINT14_MAX/2)
-        acc16 -= UINT14_MAX;
-    t[0] = ((float)acc16) / 4096.0f;
+void rotate_info() {
+    while(timer_log.read()<=10){
+        FXOS8700CQ_readRegs(FXOS8700Q_OUT_X_MSB, res, 6);
+        acc16 = (res[0] << 6) | (res[1] >> 2);
+        if (acc16 > UINT14_MAX/2)
+            acc16 -= UINT14_MAX;
+        t[0] = ((float)acc16) / 4096.0f;
 
-    acc16 = (res[2] << 6) | (res[3] >> 2);
-    if (acc16 > UINT14_MAX/2)
-        acc16 -= UINT14_MAX;
-    t[1] = ((float)acc16) / 4096.0f;
+        acc16 = (res[2] << 6) | (res[3] >> 2);
+        if (acc16 > UINT14_MAX/2)
+            acc16 -= UINT14_MAX;
+        t[1] = ((float)acc16) / 4096.0f;
 
-    acc16 = (res[4] << 6) | (res[5] >> 2);
-    if (acc16 > UINT14_MAX/2)
-        acc16 -= UINT14_MAX;
-     t[2] = ((float)acc16) / 4096.0f;
-    //Calculate degree
-    float R = (float)sqrt(((t[0])*(t[0])) + ((t[1])*(t[1])) + ((t[2])+(t[2])));
-    d[0] = acos(t[0]/R);
-    d[1] = acos(t[1]/R);
-    d[2] = acos(t[2]/R);
-    if (((d[0])>=0.7854) | ((d[1])>=0.7854) | ((d[2])>=0.7854)){
-        printf("%1.4f %1.4f %1.4f %1.4f\r\n", t[0], t[1], t[2],d[2]);   
+        acc16 = (res[4] << 6) | (res[5] >> 2);
+        if (acc16 > UINT14_MAX/2)
+            acc16 -= UINT14_MAX;
+        t[2] = ((float)acc16) / 4096.0f;
+        //Calculate degree
+        float R = (float)sqrt(((t[0])*(t[0])) + ((t[1])*(t[1])) + ((t[2])+(t[2])));
+        d[0] = acos(t[0]/R);
+        d[1] = acos(t[1]/R);
+        d[2] = acos(t[2]/R);
+        if (((d[0])>=45) | ((d[1])>=45) | ((d[2])>=45)){
+            printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
+        }
+        else{
+            printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],0);
+        }
     }
-    else{
-        printf("%1.4f %1.4f %1.4f %1.4f\r\n", t[0], t[1], t[2],d[0]);
-    }
+    timer_log.reset();
+}
+
+void Trig_led()  {
+    timer_log.start();
+    queue.call(rotate_info);
+}
+
+void None(){
+
 }
 
 
@@ -80,21 +93,14 @@ int main() {
    led=1;
    // Get the slave address
    FXOS8700CQ_readRegs(FXOS8700Q_WHOAMI, &who_am_i, 1);
-   while(true){
-       if (sw2 ==1){
-            timer_log.start();
-            while(true){   
-                led = !led;
-                queue.call_in(100,led_info);
-                if(timer_log.read() > 10){
-                    timer_log.reset();
-                    led = 1;
-                    break;
-                }
-            }
-        }
-        wait(1);
-   }
+   
+   // thread is a thread to process tasks in an EventQueue
+   // thread call queue.dispatch_forever() to start the scheduler of the EventQueue
+   thread.start(callback(&queue, &EventQueue::dispatch_forever));
+   thread2.start(callback(&queue2, &EventQueue::dispatch_forever));
+   // 'Trig_led' will execute in IRQ context
+   sw2.rise(Trig_led);
+   sw2.fall(None);
 }
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len) {
