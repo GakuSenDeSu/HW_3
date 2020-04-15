@@ -7,11 +7,11 @@ t = np.arange(0,10,1) # time vector; create Fs samples between -0.5 and 10 sec.
 y1 = np.arange(-1.5,1.5,1) # signal vector; create Fs samples
 y2 = np.arange(-1.5,1.5,1)
 y3 = np.arange(-1.5,1.5,1)
-y4 = np.arange(-0.5,1.5,1)
+y4 = np.arange(-1.5,1.5,1)
 y1k = np.arange(-1.5,1.5,1)
 y2k = np.arange(-1.5,1.5,1)
 y3k = np.arange(-1.5,1.5,1)
-y4k = np.arange(-0.5,1.5,1)
+y4k = np.arange(-1.5,1.5,1)
 
 serdev = '/dev/ttyACM0'
 s = serial.Serial(serdev,115200)

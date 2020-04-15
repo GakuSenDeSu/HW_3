@@ -27,7 +27,7 @@
 I2C i2c( PTD9,PTD8);
 Serial pc(USBTX, USBRX);
 DigitalOut led(LED1);
-InterruptIn sw2(SW2);
+DigitalIn sw2(SW2);
 EventQueue queue(512 * EVENTS_EVENT_SIZE);
 int m_addr = FXOS8700CQ_SLAVE_ADDR1;
 uint8_t who_am_i, data[2], res[6];
@@ -35,7 +35,6 @@ int16_t acc16;
 float t[3];
 float d[3];
 
-Thread thread;
 Timer timer_log;
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len);
@@ -63,32 +62,13 @@ void led_info() {
     d[1] = acos(t[1]/R);
     d[2] = acos(t[2]/R);
     if (((d[0])>=0.7854) | ((d[1])>=0.7854) | ((d[2])>=0.7854)){
-        printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
+        printf("%1.4f %1.4f %1.4f %1.4f\r\n", t[0], t[1], t[2],d[2]);   
     }
     else{
-        printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],0);
+        printf("%1.4f %1.4f %1.4f %1.4f\r\n", t[0], t[1], t[2],d[0]);
     }
 }
 
-void Trig_led()  {
-    timer_log.start();
-    while(true){
-        led = !led;
-        if(timer_log.read_us() <= 10000000){
-        queue.call(led_info);
-        wait(2);
-        }
-        else{
-        timer_log.reset();
-        led = 1;
-        break;
-        }
-    }
-}
-
-void None(){
-
-}
 
 int main() {
    pc.baud(115200);
@@ -100,13 +80,21 @@ int main() {
    led=1;
    // Get the slave address
    FXOS8700CQ_readRegs(FXOS8700Q_WHOAMI, &who_am_i, 1);
-   
-   // t is a thread to process tasks in an EventQueue
-   // t call queue.dispatch_forever() to start the scheduler of the EventQueue
-   thread.start(callback(&queue, &EventQueue::dispatch_forever));
-   // 'Trig_led' will execute in IRQ context
-   sw2.rise(Trig_led);
-   sw2.fall(None);
+   while(true){
+       if (sw2 ==1){
+            timer_log.start();
+            while(true){   
+                led = !led;
+                queue.call_in(100,led_info);
+                if(timer_log.read() > 10){
+                    timer_log.reset();
+                    led = 1;
+                    break;
+                }
+            }
+        }
+        wait(1);
+   }
 }
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len) {
