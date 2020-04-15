@@ -3,21 +3,19 @@ import numpy as np
 import serial
 import time
 
-Fs = 512.0;  # sampling rate
-Ts = 1.0/Fs; # sampling interval
-t = np.arange(0,10,Fs) # time vector; create Fs samples between 0 and 1.0 sec.
-y1 = np.arange(-1.5,1.5,Ts) # signal vector; create Fs samples
-y2 = np.arange(-1.5,1.5,Ts)
-y3 = np.arange(-1.5,1.5,Ts)
-y4 = np.arange(-0.5,1.5,Ts)
-y1k = np.arange(-1.5,1.5,Ts)
-y2k = np.arange(-1.5,1.5,Ts)
-y3k = np.arange(-1.5,1.5,Ts)
-y4k = np.arange(-1.5,1.5,Ts)
+t = np.arange(0,10,1) # time vector; create Fs samples between -0.5 and 10 sec.
+y1 = np.arange(-1.5,1.5,1) # signal vector; create Fs samples
+y2 = np.arange(-1.5,1.5,1)
+y3 = np.arange(-1.5,1.5,1)
+y4 = np.arange(-0.5,1.5,1)
+y1k = np.arange(-1.5,1.5,1)
+y2k = np.arange(-1.5,1.5,1)
+y3k = np.arange(-1.5,1.5,1)
+y4k = np.arange(-0.5,1.5,1)
 
 serdev = '/dev/ttyACM0'
 s = serial.Serial(serdev,115200)
-for x in range(0, int(Fs)):
+for x in range(0,10):
     line=s.readline() # Read an echo string from K66F terminated with '\n'
     y1=line.decode().strip().split(" ")[0]
     y1k[x] = float(y1)
@@ -27,6 +25,7 @@ for x in range(0, int(Fs)):
     y3k[x] = float(y3)
     y4=line.decode().strip().split(" ")[3]
     y4k[x] = float(y4)
+#y4k[11] = 0
 
 fig, ax = plt.subplots(2, 1)
 ax[0].plot(t,y1k,'r',label = 'x')
