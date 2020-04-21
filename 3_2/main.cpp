@@ -59,15 +59,15 @@ void rotate_info() {
             acc16 -= UINT14_MAX;
         t[2] = ((float)acc16) / 4096.0f;
         //Calculate degree
-        float R = (float)sqrt(((t[0])*(t[0])) + ((t[1])*(t[1])) + ((t[2])+(t[2])));
+        float R = (float)sqrt((t[0]*t[0]) + (t[1]*t[1]) + (t[2]*t[2]));
         d[0] = acos(t[0]/R);
         d[1] = acos(t[1]/R);
         d[2] = acos(t[2]/R);
-        if (((d[0])>=45) | ((d[1])>=45) | ((d[2])>=45)){
-            printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
+        if ((d[0]>=0.7854) || (d[1]>=0.7854) || (d[2]>=0.7854)){
+            printf("%1.4f\t%1.4f\t%1.4f\t%1.4f\r\n", t[0], t[1], t[2],R);   
         }
         else{
-            printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],0);
+            printf("%1.4f\t%1.4f\t%1.4f\t%1.4f\r\n", t[0], t[1], t[2],R);
         }
         led =! led;
         wait(1);
