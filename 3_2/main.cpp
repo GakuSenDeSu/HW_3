@@ -63,21 +63,22 @@ void rotate_info() {
         d[0] = acos(t[0]/R);
         d[1] = acos(t[1]/R);
         d[2] = acos(t[2]/R);
-        if ((d[0]>=0.7854) || (d[1]>=0.7854) || (d[2]>=0.7854)){
-            printf("%1.4f\t%1.4f\t%1.4f\t%1.4f\r\n", t[0], t[1], t[2],R);   
+        if ((abs(d[0])>=0.7854)) || (abs(d[1])>=0.7854) || (abs(d[2])>=0.7854)){
+            printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
         }
         else{
-            printf("%1.4f\t%1.4f\t%1.4f\t%1.4f\r\n", t[0], t[1], t[2],R);
+            printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],0);
         }
         led =! led;
-        wait(1);
+        wait_us(50000);
     }
     timer_log.reset();
+    led = 1;
 }
 
 void Trig_led()  {
     timer_log.start();
-    queue.call_every(100,rotate_info);
+    queue.call_in(100,rotate_info);
 }
 
 
