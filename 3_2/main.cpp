@@ -60,10 +60,10 @@ void rotate_info() {
         t[2] = ((float)acc16) / 4096.0f;
         //Calculate degree
         float R = (float)sqrt((t[0]*t[0]) + (t[1]*t[1]) + (t[2]*t[2]));
-        d[0] = acos(t[0]/R);
-        d[1] = acos(t[1]/R);
-        d[2] = acos(t[2]/R);
-        if ((abs(d[0])>=0.7854)) || (abs(d[1])>=0.7854) || (abs(d[2])>=0.7854)){
+        d[0] = abs(acos(t[0]/R));
+        d[1] = abs(acos(t[1]/R));
+        d[2] = abs(acos(t[2]/R));
+        if ((abs(d[0]-1.5930)>=0.7854) || (abs(d[1]-1.5875)>=0.7854) || (abs(d[2]-0.2946)>=0.7854)){
             printf("%1.4f %1.4f %1.4f %d\r\n", t[0], t[1], t[2],1);   
         }
         else{
