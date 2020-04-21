@@ -32,7 +32,7 @@ ax[0].plot(t,y3k,'g')
 ax[0].legend(labels = ['x', 'y', 'z'], loc = 'best')
 ax[0].set_xlabel('Time')
 ax[0].set_ylabel('Acc Vector')
-ax[1].plot(t,y4k,'bo', markerfacecolor='none', linestyle='solid') # plotting the spectrum
+ax[1].plot(t,y4k,'bo', linestyle='solid') # plotting the spectrum
 ax[1].plot(t,y5k,color='r', linestyle='solid')
 ax[1].set_xlabel('Time')
 ax[1].set_ylabel('Tilt')
